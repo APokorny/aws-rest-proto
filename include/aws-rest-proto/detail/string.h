@@ -20,7 +20,7 @@ template <char... s>
 constexpr char const string_storage[sizeof...(s) + 1] = {s..., '\0'};
 template <char... s>
 char const* c_str(t::string<s...>) {
-    return &string_storage<s...>[0];
+    return string_storage<s...>;
 }
 
 static constexpr int select_concat_size(const int i) { return i <= 4 ? 0 : i <= 16 ? 1 : 2; }

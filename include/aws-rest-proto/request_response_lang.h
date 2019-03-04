@@ -43,6 +43,8 @@ template <typename... Ts>
 struct error_response {};
 template <typename Name, typename HostPrefix>
 struct service {};
+template <typename Name>
+struct field {};
 }  // namespace t
 
 template <typename... Ts>
@@ -55,7 +57,9 @@ template <typename Service, typename... Ts>
 constexpr auto response(Ts &&...) -> t::response<Service, Ts...>;
 
 template <typename Ref>
-auto response_ref() -> t::response_ref<Ref> { return {}; }
+auto response_ref() -> t::response_ref<Ref> {
+    return {};
+}
 
 template <typename... Ts>
 auto error_response(Ts &&...) -> t::error_response<Ts...>;
@@ -72,6 +76,9 @@ auto object(NameT, Ts &&...) -> t::object<NameT, Ts...>;
 
 template <typename Name, typename HostPrefix>
 auto service(Name &&, HostPrefix &&) -> t::service<Name, HostPrefix>;
+
+template <typename Name>
+auto field(Name &&) -> t::field<Name>;
 
 const t::any_other any_other;
 const t::on_failure on_failure;

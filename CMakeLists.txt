@@ -11,7 +11,7 @@ find_package(CryptoPP)
 find_package(Threads)
 find_package(fmt)
 
-add_library(aws-rest-proto STATIC src/client_request.cpp src/encode.cpp)
+add_library(aws-rest-proto STATIC src/aws_client_request.cpp src/encode.cpp)
 add_library(AwsRestProto::aws-rest-proto ALIAS aws-rest-proto)
 
 target_include_directories(aws-rest-proto PUBLIC

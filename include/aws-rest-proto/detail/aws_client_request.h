@@ -4,11 +4,10 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/beast/core.hpp>
 #include <boost/beast/http.hpp>
-#include <boost/beast/version.hpp>
 
 namespace arp {
 namespace detail {
-struct client_request {
+struct aws_client_request {
     boost::asio::ssl::stream<boost::asio::ip::tcp::socket>& stream;
     boost::beast::flat_buffer buffer;
     using response_type = boost::beast::http::response<boost::beast::http::string_body>;
@@ -17,7 +16,7 @@ struct client_request {
     std::function<void(boost::beast::error_code)> error_handler;
     std::function<void(response_type&)> response_handler;
 
-    client_request(boost::asio::ssl::stream<boost::asio::ip::tcp::socket>& stream);
+    aws_client_request(boost::asio::ssl::stream<boost::asio::ip::tcp::socket>& stream);
     void setup_post(char const* request, char const* host);
     void finalize_post();
     void write_and_read(std::function<void(boost::beast::error_code)>&& error_handler,

@@ -11,6 +11,8 @@ template <typename Name, typename Value>
 struct param;
 template <typename Name, typename... Ts>
 struct object;
+template <typename Name>
+struct field;
 struct any_other;
 template <typename... Ts>
 struct payload;

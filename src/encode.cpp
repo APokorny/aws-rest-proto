@@ -4,7 +4,7 @@
 #include <boost/archive/iterators/base64_from_binary.hpp>
 #include <boost/archive/iterators/binary_from_base64.hpp>
 #include <boost/archive/iterators/transform_width.hpp>
-#include "aws-rest-proto/detail/digest.h"
+#include "digest.h"
 
 namespace bai = boost::archive::iterators;
 
