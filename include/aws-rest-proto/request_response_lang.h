@@ -3,6 +3,8 @@
 #include <aws-rest-proto/request_response_lang_fwd.h>
 #include <aws-rest-proto/detail/item.h>
 #include <aws-rest-proto/detail/request_response_lang.h>
+#include <kvasir/mpl/algorithm/all.hpp>
+#include <kvasir/mpl/functional/call.hpp>
 #include <type_traits>
 
 namespace arp {
@@ -48,21 +50,27 @@ struct field {};
 }  // namespace t
 
 template <typename... Ts>
-constexpr auto payload(Ts &&...) -> t::payload<Ts...>;
+constexpr auto payload(Ts &&...)
+    -> std::enable_if_t<kvasir::mpl::call<kvasir::mpl::all<detail::valid_payload>, Ts...>::value, t::payload<Ts...>>;
 
-template <typename Service, typename... Ts>
-constexpr auto request(Ts &&...) -> t::request<Service, Ts...>;
+template <typename Service, typename Name, typename... Ts>
+constexpr auto request(Name &&, Ts &&...) -> std::enable_if_t<detail::test<detail::is_string, Name>::value &&
+                                                                  kvasir::mpl::call<kvasir::mpl::all<detail::valid_request>, Ts...>::value,
+                                                              t::request<Service, Name, Ts...>>;
 
-template <typename Service, typename... Ts>
-constexpr auto response(Ts &&...) -> t::response<Service, Ts...>;
+template <typename Service, typename Name, typename... Ts>
+constexpr auto response(Name &&, Ts &&...) -> std::enable_if_t<detail::test<detail::is_string, Name>::value &&
+                                                                   kvasir::mpl::call<kvasir::mpl::all<detail::valid_request>, Ts...>::value,
+                                                               t::response<Service, Name, Ts...>>;
 
 template <typename Ref>
-auto response_ref() -> t::response_ref<Ref> {
+auto response_ref() -> std::enable_if_t<detail::test<detail::is_response, Ref>::value, t::response_ref<Ref>> {
     return {};
 }
 
 template <typename... Ts>
-auto error_response(Ts &&...) -> t::error_response<Ts...>;
+auto error_response(Ts &&...)
+    -> std::enable_if_t<kvasir::mpl::call<kvasir::mpl::all<detail::valid_error>, Ts...>::value, t::error_response<Ts...>>;
 
 template <typename T, typename Name>
 auto param(Name) -> t::param<Name, T>;
@@ -71,8 +79,9 @@ template <typename Name, typename Expression>
 auto ensure(Name, Expression) -> t::ensure<Name, Expression>;
 
 template <typename NameT, typename... Ts>
-auto object(NameT, Ts &&...) -> t::object<NameT, Ts...>;
-//    typename std::enable_if<kvasir::mpl::call<kvasir::mpl::all<is_objectc>, Ts...>, t::object<NameT, Ts...>>::type;
+auto object(NameT, Ts &&...) -> std::enable_if_t<detail::test<detail::is_string, NameT>::value &&
+                                                     kvasir::mpl::call<kvasir::mpl::all<detail::valid_payload>, Ts...>::value,
+                                                 t::object<NameT, Ts...>>;
 
 template <typename Name, typename HostPrefix>
 auto service(Name &&, HostPrefix &&) -> t::service<Name, HostPrefix>;

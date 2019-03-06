@@ -50,6 +50,49 @@ struct is_payload {
     struct f<t::payload<Es...>> : kvasir::mpl::bool_<true> {};
 };
 
+struct is_string {
+    template <typename T>
+    struct f : kvasir::mpl::bool_<false> {};
+
+    template <char... Cs>
+    struct f<t::string<Cs...>> : kvasir::mpl::bool_<true> {};
+};
+
+struct valid_payload {
+    template <typename T>
+    struct f : kvasir::mpl::bool_<false> {};
+    template <typename... Es>
+    struct f<t::object<Es...>> : kvasir::mpl::bool_<true> {};
+    template <typename Name, typename Value>
+    struct f<t::param<Name, Value>> : kvasir::mpl::bool_<true> {};
+    template <typename Name, typename Value>
+    struct f<t::ensure<Name, Value>> : kvasir::mpl::bool_<true> {};
+};
+
+struct valid_request {
+    template <typename T, typename D = void>
+    struct f : kvasir::mpl::bool_<false> {};
+    template <typename... Es, typename D>
+    struct f<t::payload<Es...>, D> : kvasir::mpl::bool_<true> {};
+    template <typename... Es>
+    struct f<t::error_response<Es...>, void> : kvasir::mpl::bool_<true> {};
+    template <typename... Es>
+    struct f<t::response<Es...>, void> : kvasir::mpl::bool_<true> {};
+    template <typename Ref>
+    struct f<t::response_ref<Ref>, void> : kvasir::mpl::bool_<true> {};
+    template <typename T>
+    struct f<T, typename std::enable_if<std::is_same<std::decay_t<T>, t::on_failure>::value>::type> : kvasir::mpl::bool_<true> {};
+};
+
+struct valid_error {
+    template <typename T, typename D = void>
+    struct f : kvasir::mpl::bool_<false> {};
+    template <char... Cs>
+    struct f<t::string<Cs...>, void> : kvasir::mpl::bool_<true> {};
+    template <typename T>
+    struct f<T, typename std::enable_if<std::is_same<std::decay_t<T>, t::any_other>::value>::type> : kvasir::mpl::bool_<true> {};
+};
+
 namespace impl {
 template <typename T>
 struct host;
@@ -148,6 +191,9 @@ struct flatten_object {
     using f = typename kvasir::mpl::detail::join_select<kvasir::mpl::detail::select_join_size(
         sizeof...(Ts))>::template f<C::template f, typename impl::flatten_object<Ts>::type...>::type;
 };
+
+template <typename C, typename T>
+using test = typename C::template f<T>;
 
 }  // namespace detail
 }  // namespace arp
