@@ -129,17 +129,17 @@ template <typename C, typename L, typename... Ts>
 struct unpack;
 template <typename C, typename S, typename T, typename... Ls, typename... Ts>
 struct unpack<C, t::request<S, T, Ls...>, Ts...> {
-    using type = typename kvasir::mpl::dcall<C, sizeof...(Ls)>::template f<Ts..., Ls...>;
+    using type = typename kvasir::mpl::call<C, Ts..., Ls...>;
 };
 
 template <typename C, typename S, typename T, typename... Ls, typename... Ts>
 struct unpack<C, t::response_ref<t::response<S, T, Ls...>>, Ts...> {
-    using type = typename kvasir::mpl::dcall<C, sizeof...(Ls)>::template f<Ts..., Ls...>;
+    using type = typename kvasir::mpl::call<C, Ts..., Ls...>;
 };
 
 template <typename C, typename S, typename T, typename... Ls, typename... Ts>
 struct unpack<C, t::response<S, T, Ls...>, Ts...> {
-    using type = typename kvasir::mpl::dcall<C, sizeof...(Ls)>::template f<Ts..., Ls...>;
+    using type = typename kvasir::mpl::call<C, Ts..., Ls...>;
 };
 
 }  // namespace impl
