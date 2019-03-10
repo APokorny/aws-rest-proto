@@ -109,7 +109,7 @@ try_execute_response(arp::t::response<S, Name, Ts...>, Parameters const& paramet
     using expected_payload = kvasir::mpl::call<filter_payload<kvasir::mpl::front<>>, Ts...>;
     using variable_elements =
         kvasir::mpl::call<filter_payload<kvasir::mpl::front<kvasir::mpl::unpack<flatten_object<
-                              kvasir::mpl::find_if<only_param, kvasir::mpl::transform<param_to_item, kvasir::mpl::cfe<arp::params>>>>>>>,
+                              kvasir::mpl::filter<only_param, kvasir::mpl::transform<param_to_item, kvasir::mpl::cfe<arp::params>>>>>>>,
                           Ts...>;
     variable_elements elements;
     bool parse_payload = execute_payload(expected_payload{}, payload, elements);
