@@ -38,7 +38,7 @@ int apply_payload_element(fmt::memory_buffer& buf, bool& first_in_set, t::object
     format_to(buf, R"({}"{}":{{)", first_in_set ? "" : ",", detail::c_str(Name{}));
     first_in_set = false;
     bool first_in_children = true;
-    int foo[] = {apply_payload_element(buf, first_in_children, Elements{}, params)...};
+    auto foo = {apply_payload_element(buf, first_in_children, Elements{}, params)...};
     format_to(buf, "}}");
     return 0;
 }
@@ -48,7 +48,7 @@ auto generate_payload(t::payload<Ts...> const& payload, params<Params...> const&
     fmt::memory_buffer buf;
     format_to(buf, "{{");
     bool first_in_set = true;
-    int foo[] = {apply_payload_element(buf, first_in_set, Ts{}, params)...};
+    auto unroll_payload = {apply_payload_element(buf, first_in_set, Ts{}, params)...};
     format_to(buf, "}}");
     return buf;
 }
