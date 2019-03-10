@@ -4,6 +4,7 @@
 #include <kvasir/mpl/algorithm/find_if.hpp>
 #include <kvasir/mpl/algorithm/filter.hpp>
 #include <kvasir/mpl/sequence/front.hpp>
+#include <kvasir/mpl/sequence/join.hpp>
 
 namespace arp {
 namespace detail {
@@ -169,7 +170,6 @@ template <typename T>
 using errors = typename kvasir::mpl::call<unpack_arp<filter_errors<kvasir::mpl::front<>>>, T>;
 template <typename T>
 using responses = typename kvasir::mpl::call<unpack_arp<filter_responses<kvasir::mpl::transform<detail::to_response>>>, T>;
-
 namespace impl {
 template <typename T>
 struct flatten_object {
@@ -178,18 +178,16 @@ struct flatten_object {
 
 template <typename N, typename... Ts>
 struct flatten_object<t::object<N, Ts...>> {
-    using type = typename kvasir::mpl::detail::join_select<kvasir::mpl::detail::select_join_size(
-        sizeof...(Ts))>::template f<kvasir::mpl::list, typename flatten_object<Ts>::type...>::type;
+    using type = kvasir::mpl::call<kvasir::mpl::join<>, typename flatten_object<Ts>::type...>;
 };
 }  // namespace impl
-/// \brief converts a tree or list of lists into one list containing the contents of all
-/// children \effects \requires example call<flatten<>,list<void>,list<list<int>,char>,bool>
+/// \brief converts a tree or t::object into one list containing the contents of all
+/// call<flatten_object<>, t::object<void>,t::object<t::object<int>,char>,bool>
 /// resolves to list<void,int,char,bool>.
 template <typename C = kvasir::mpl::listify>
 struct flatten_object {
     template <typename... Ts>
-    using f = typename kvasir::mpl::detail::join_select<kvasir::mpl::detail::select_join_size(
-        sizeof...(Ts))>::template f<C::template f, typename impl::flatten_object<Ts>::type...>::type;
+    using f = kvasir::mpl::call<kvasir::mpl::join<C>, typename impl::flatten_object<Ts>::type...>;
 };
 
 template <typename C, typename T>
