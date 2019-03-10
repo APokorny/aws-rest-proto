@@ -33,6 +33,15 @@ struct is_key {
     using f = f_impl<T>;
 };
 
+struct is_item {
+    template <typename T>
+    struct f_impl;
+    template <typename K, typename V, bool D>
+    struct f_impl<item<K, V, D>> : kvasir::mpl::bool_<true> {};
+    template <typename T>
+    using f = f_impl<T>;
+};
+
 template <typename K, typename V>
 constexpr V const& item_get(item<K, V, true> const& x) {
     return x;

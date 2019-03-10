@@ -27,6 +27,7 @@ std::unique_ptr<request_token> async_aws_request(boost::asio::ssl::stream<boost:
     using service = detail::service<RequestType>;
     using errors = detail::errors<RequestType>;
 
+    static_assert(kvasir::mpl::call<kvasir::mpl::all<detail::is_item>, Ts...>::value, "All function parameters must be assigned");
     auto req_store = std::make_unique<request_token>(stream);
     arp::params<Ts...> params(static_cast<Ts&&>(ts)...);
 

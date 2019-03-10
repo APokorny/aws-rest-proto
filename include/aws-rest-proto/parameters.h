@@ -9,16 +9,16 @@ template <typename... Params>
 struct params : Params... {
     constexpr params() = default;
 
+    static_assert(kvasir::mpl::call<kvasir::mpl::all<detail::is_item>,Params...>::value, "All Params must be items");
     using this_t = params<Params...>;
     template <typename ...Others,
-              typename = typename std::enable_if<
-                  std::is_same<this_t, params<std::decay_t<Others>...> >::value>::type>
+              typename = std::enable_if_t<
+                  std::is_same<this_t, params<std::decay_t<Others>...> >::value>>
     constexpr params(Others&&... other) : Params(static_cast<Others&&>(other))... {}
     template <typename ...Others,
-              typename = typename std::enable_if<
-                  std::is_same<this_t, params<std::decay_t<Others>...> >::value>::type>
+              typename = std::enable_if_t<
+                  std::is_same<this_t, params<std::decay_t<Others>...> >::value>>
     constexpr params(params<Others...> const& other) : Params(static_cast<Others&&>(other))... {}
-
 };
 
 
