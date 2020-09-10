@@ -1,5 +1,6 @@
 #pragma once
 #include "aws-rest-proto/detail/item.h"
+#include "kvasir/mpl/types/list.hpp"
 
 namespace arp {
 namespace detail {
@@ -81,6 +82,10 @@ template <typename... Ts>
 using concat_t = typename detail::concat_select<detail::select_concat_size(sizeof...(Ts))>::template f<Ts...>::type;
 template <typename... Ts>
 auto concat(Ts...) -> typename detail::concat_select<detail::select_concat_size(sizeof...(Ts))>::template f<Ts...>::type {
+    return {};
+}
+template <typename... Ts>
+auto concat_list(kvasir::mpl::list<Ts...>) -> typename detail::concat_select<detail::select_concat_size(sizeof...(Ts))>::template f<Ts...>::type {
     return {};
 }
 }  // namespace arp
