@@ -132,7 +132,7 @@ template <typename... Responses, typename Parameters>
 constexpr void for_each_response(kvasir::mpl::list<Responses...>, Parameters const& parameters, nlohmann::json const& payload) {
     bool cont = true;
     bool execute_until_first_match[] = {cont = cont && try_execute_response(Responses{}, parameters, payload)...};
-    (void*)execute_until_first_match;
+    (void)execute_until_first_match;
 }
 
 template <typename ErrorName, typename Parameters>
