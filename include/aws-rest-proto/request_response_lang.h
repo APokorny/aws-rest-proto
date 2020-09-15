@@ -7,46 +7,75 @@
 #include <kvasir/mpl/functional/call.hpp>
 #include <type_traits>
 
-namespace arp {
-namespace t {
-
+namespace arp
+{
+namespace t
+{
 template <typename T>
-struct assignable {
+struct assignable
+{
     template <typename OtherT>
-    constexpr auto operator=(OtherT &&other) const -> detail::item<T, std::decay_t<OtherT>> {
+    constexpr auto operator=(OtherT &&other) const -> detail::item<T, std::decay_t<OtherT>>
+    {
         return detail::item<T, std::decay_t<OtherT>>(static_cast<OtherT &&>(other));
     }
 };
 template <typename Service, typename Name, typename... Ts>
-struct response : assignable<response<Service, Name, Ts...>> {
+struct response : assignable<response<Service, Name, Ts...>>
+{
     using assignable<response<Service, Name, Ts...>>::operator=;
 };
 template <typename T>
-struct response_ref : assignable<response_ref<T>> {
+struct response_ref : assignable<response_ref<T>>
+{
     using assignable<response_ref<T>>::operator=;
 };
+
+template <typename T>
+struct error_ref : assignable<error_ref<T>>
+{
+    using assignable<error_ref<T>>::operator=;
+};
 template <typename Service, typename Name, typename... Ts>
-struct request {};
+struct request
+{
+};
 template <typename Name, typename Value>
-struct param {};
+struct param
+{
+};
 template <typename Name, typename Expression>
-struct ensure {};
+struct ensure
+{
+};
 template <typename Name, typename... Ts>
-struct object {};
-struct any_other : assignable<any_other> {
+struct object
+{
+};
+struct any_other : assignable<any_other>
+{
     using assignable<any_other>::operator=;
 };
-struct on_failure : assignable<on_failure> {
+struct on_failure : assignable<on_failure>
+{
     using assignable<on_failure>::operator=;
 };
 template <typename... Ts>
-struct payload {};
+struct payload
+{
+};
 template <typename... Ts>
-struct error_response {};
+struct error_response
+{
+};
 template <typename Name, typename HostPrefix>
-struct service {};
+struct service
+{
+};
 template <typename Name>
-struct field {};
+struct field
+{
+};
 }  // namespace t
 
 template <typename... Ts>
@@ -64,7 +93,14 @@ constexpr auto response(Name &&, Ts &&...) -> std::enable_if_t<detail::test<deta
                                                                t::response<Service, Name, Ts...>>;
 
 template <typename Ref>
-auto response_ref() -> std::enable_if_t<detail::test<detail::is_response, Ref>::value, t::response_ref<Ref>> {
+auto response_ref() -> std::enable_if_t<detail::test<detail::is_response, std::decay_t<Ref>>::value, t::response_ref<Ref>>
+{
+    return {};
+}
+
+template <typename Ref>
+auto error_ref() -> std::enable_if_t<detail::test<detail::is_string, std::decay_t<Ref>>::value, t::error_ref<Ref>>
+{
     return {};
 }
 
@@ -89,12 +125,14 @@ auto service(Name &&, HostPrefix &&) -> t::service<Name, HostPrefix>;
 template <typename Name>
 auto field(Name &&) -> t::field<Name>;
 
-const t::any_other any_other;
+const t::any_other  any_other;
 const t::on_failure on_failure;
 
-namespace literals {
+namespace literals
+{
 template <typename CharT, CharT... String>
-constexpr t::string<String...> operator""_s() noexcept {
+constexpr t::string<String...> operator""_s() noexcept
+{
     return {};
 }
 }  // namespace literals

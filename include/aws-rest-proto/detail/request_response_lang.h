@@ -57,6 +57,8 @@ struct is_string {
 
     template <char... Cs>
     struct f<t::string<Cs...>> : kvasir::mpl::bool_<true> {};
+    template <char... Cs>
+    struct f<t::string<Cs...> const&> : kvasir::mpl::bool_<true> {};
 };
 
 struct valid_payload {
@@ -79,6 +81,8 @@ struct valid_request {
     struct f<t::error_response<Es...>, void> : kvasir::mpl::bool_<true> {};
     template <typename... Es>
     struct f<t::response<Es...>, void> : kvasir::mpl::bool_<true> {};
+    template <typename... Es>
+    struct f<t::response<Es...> const&, void> : kvasir::mpl::bool_<true> {};
     template <typename Ref>
     struct f<t::response_ref<Ref>, void> : kvasir::mpl::bool_<true> {};
     template <typename T>
@@ -90,6 +94,8 @@ struct valid_error {
     struct f : kvasir::mpl::bool_<false> {};
     template <char... Cs>
     struct f<t::string<Cs...>, void> : kvasir::mpl::bool_<true> {};
+    template <char... Cs>
+    struct f<t::string<Cs...> const&, void> : kvasir::mpl::bool_<true> {};
     template <typename T>
     struct f<T, typename std::enable_if<std::is_same<std::decay_t<T>, t::any_other>::value>::type> : kvasir::mpl::bool_<true> {};
 };

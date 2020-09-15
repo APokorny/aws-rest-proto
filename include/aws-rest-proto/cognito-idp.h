@@ -2,7 +2,8 @@
 #include "request_response_lang.h"
 
 namespace arp {
-
+constexpr auto user_not_found_s = "UserNotFoundException"_s;
+using user_not_found = decltype(user_not_found_s);
 using cognito = decltype(service("AWSCognitoIdentityProviderService"_s, "cognito-idp"_s));
 using challenge_password_verify =                         //
     decltype(response<cognito>("InitiateAuthResponse"_s,  //
@@ -64,7 +65,7 @@ using user_srp_auth =                                             //
     decltype(request<cognito>("InitiateAuth"_s,                   //
                               error_response(                     //
                                   "UserNotConfirmedException"_s,  //
-                                  "UserNotFoundException"_s,      //
+                                  user_not_found_s,      //
                                   "InvalidPasswordException"_s,      //
                                   any_other),                     //
                               payload(ensure("AuthFlow"_s, "USER_SRP_AUTH"_s),
@@ -79,7 +80,7 @@ using refresh_token =                                             //
     decltype(request<cognito>("InitiateAuth"_s,                   //
                               error_response(                     //
                                   "UserNotConfirmedException"_s,  //
-                                  "UserNotFoundException"_s,      //
+                                  user_not_found_s,      //
                                   any_other),                     //
                               payload(ensure("AuthFlow"_s, "REFRESH_TOKEN"_s),
                                       object("AuthParameters"_s,                      //
